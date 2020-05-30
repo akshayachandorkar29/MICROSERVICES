@@ -1,0 +1,55 @@
+post:
+  /register:
+    summary: create user
+    description: create user flask_service
+  parameters:
+    - name: body
+      in: body
+      schema:
+        properties:
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+responses:
+  200:
+    description:
+      Response
+
+get:
+  /activate/{token}:
+    summary: reset user password
+    description: create reset password user flask_service
+  parameters:
+    - name: token
+      in: path
+      type: string
+response:
+  200:
+    description:
+      Response
+
+put:
+  /reset/{token}:
+    summary: reset user password
+    description: create reset password user flask_service
+  parameters:
+    - name: token
+      in: path
+      type: string
+    - name: body
+      in: body
+      schema:
+        properties:
+          email:
+            type: string
+          old_password:
+            type: string
+          new_password:
+            type: string
+respons:
+  200:
+    description:
+      Response

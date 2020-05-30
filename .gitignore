@@ -1,0 +1,6 @@
+env_microservices
+micro_env
+flask_api_swagger/swagger_user/swagger_env
+microservices/gateway/gateway_env
+microservices/notes/notes_env
+microservices/users/users_env

@@ -1,0 +1,2 @@
+WEB_SERVER_ADDRESS: '127.0.0.1:9002'
+AMQP_URI: pyamqp://guest:guest@localhost
