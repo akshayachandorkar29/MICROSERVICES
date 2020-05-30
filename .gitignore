@@ -1,7 +1,7 @@
 .idea
 env_microservices
 micro_env
-swagger_env
-gateway_env
-notes_env
-users_env
+flask_api_swagger/swagger_user/swagger_env.py
+microservices/gateway/gateway_env.py
+microservices/notes/notes_env.py
+microservices/users/users_env.py
