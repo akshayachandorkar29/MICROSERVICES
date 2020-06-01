@@ -18,10 +18,17 @@ class SendMail:
     def __init__(self):
         pass
 
-    def send_mail(self, to_mail, message):
+    def send_mail(self, to_mail, username, host, port, short, html_file_name):
         try:
+
+            report_file = open(html_file_name)
+            html = report_file.read().format(username=username,
+                                             host=host,
+                                             port=port,
+                                             short=short)
+
             # create message object instance
-            msg = MIMEMultipart()
+            msg = MIMEMultipart('alternative')
 
             # setup the parameters of the message
             password = configuration.MICRO_EMAIL_PASSWORD
@@ -29,15 +36,18 @@ class SendMail:
             msg['To'] = to_mail
             msg['Subject'] = "Link"
 
-            # add in the message body
-            msg.attach(MIMEText(message, 'plain'))
+            message = "Hello"
 
-            # create server
-            server = smtplib.SMTP('smtp.gmail.com: 587')
+            # Record the MIME types of both parts - text/plain and text/html.
+            part1 = MIMEText(message, 'plain')
+            part2 = MIMEText(html, 'html')
 
+            msg.attach(part1)
+            msg.attach(part2)
+
+            # Send the message via local SMTP server.
+            server = smtplib.SMTP('smtp.gmail.com:587')
             server.starttls()
-
-            # Login Credentials for sending the mail
             server.login(msg['From'], password)
 
             # send the message via the server.
@@ -50,54 +60,5 @@ class SendMail:
         except Exception as e:
             print(e)
 
-
-
-
-
-
-
-
-
-
-
-
-# # import necessary packages
-# from email.mime.multipart import MIMEMultipart
-# from email.mime.text import MIMEText
-# import smtplib
-# from ...users_env import Configuration
-# configuration = Configuration()
-#
-# # commnet this code
-# # import ssl
-# #
-# # # Create context (to specify TLS version)
-# # sc = ssl.create_default_context()
-# # sc.options = ssl.OP_NO_TLSv1_3
-# # sc.minimum_version = ssl.TLSVersion["TLSv1_1"]
-# import logging
-#
-# class SendMail:
-#
-#     def __init__(self):
-#         self.connnection = self.connect()  # initialize connect
-#
-#     def connect(self):
-#         """ this method is used to connect the mail service"""
-#         try:
-#             s = smtplib.SMTP('smtp.gmail.com', 587)
-#             s.starttls()
-#             s.login('tikhilerutuja321@gmail.com', 'shevpuri')
-#             print("Email service is started: {}".format(s))
-#             return s
-#         except:
-#             return "email service is failed"
-#
-#     def send_mail(self, email, data):
-#         logging.info(email)
-#         msg = MIMEText(data)
-#         logging.info(msg)
-#         self.connnection.sendmail('akshayachandorkar29@gmail.com', email, msg.as_string())
-#         self.connnection.quit()
 
 

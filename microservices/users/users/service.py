@@ -10,15 +10,15 @@ from .common.db_operations import *
 from .models import Users, Short
 from .config.redis_connection import RedisConnection
 from .auth.short_url_generated import ShortUrlGenerator
-from .auth.validation import Validation
 from .vendor.send_mail import SendMail
+from .auth.validation import Validation
 from ..users_env import Configuration
 import jwt
 
 configuration = Configuration()
 short_object = ShortUrlGenerator()
 redis_obj = RedisConnection()
-mail_object = SendMail()
+mail_obj = SendMail()
 valid = Validation()
 
 
@@ -84,12 +84,10 @@ class UserService(object):
 
                     host = configuration.MICRO_HOST
                     port = configuration.MICRO_PORT
-
-                    # message to send in the mail as a link
-                    message = f"Click here to activate : http://{host}:{port}/activate/token={short}"
+                    html_file_name = 'users/users/activate.html'
 
                     # sending mail using token, email id and link
-                    mail_object.send_mail(email, message)
+                    mail_obj.send_mail(email, username, host, port, short, html_file_name)
 
                     response["success"] = True
                     response["message"] = "User Registered successfully!"
@@ -188,6 +186,7 @@ class UserService(object):
         }
         try:
 
+            username = request.get('username')
             email = request.get('email')
 
             result = filter_by_email(table=Users, email=email)
@@ -207,12 +206,10 @@ class UserService(object):
 
                 host = configuration.MICRO_HOST
                 port = configuration.MICRO_PORT
-
-                # message to send in the mail as a link
-                message = f"Click here to activate : http://{host}:{port}/reset/token={short}"
+                html_file_name = 'users/users/forgot.html'
 
                 # sending mail using token, email id and link
-                mail_object.send_mail(email, message)
+                mail_obj.send_mail(email, username, host, port, short, html_file_name)
 
                 response["success"] = True
                 response["message"] = "Mail sent successfully!"
