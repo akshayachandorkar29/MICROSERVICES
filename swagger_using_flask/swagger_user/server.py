@@ -4,11 +4,27 @@ from flasgger import Swagger, swag_from
 from .settings import CONFIG
 from nameko.standalone.rpc import ClusterRpcProxy
 from werkzeug.wrappers import Response
-from .auth.decorator import is_authenticated
 from .common.utils import *
 
 app = Flask(__name__)
-Swagger(app)
+app.config["SWAGGER"] = {"title": "Swagger_Microservices", "uiversion": 2}
+
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": "apispec_1",
+            "route": "/apispec_1.json",
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/swagger/",
+}
+
+swagger = Swagger(app, config=swagger_config)
 
 
 @app.route('/register', methods=['POST'])
@@ -62,25 +78,5 @@ def reset(**kwargs):
     return Response(response=response, content_type='application/json', status=200)
 
 
-@app.route('/create_note', methods=['POST'])
-@swag_from('new_user_swagger.yml')
-def create_note():
-    request_data = json.loads(request.get_data(as_text=True))
-    with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
-        response = rpc.noteService.create_note_service(request_data)
-        response = json.dumps(response)
-    return Response(response=response, content_type='application/json', status=200)
-
-
-@app.route('/create_label', methods=['POST'])
-@swag_from('new_user_swagger.yml')
-def create_label():
-    request_data = json.loads(request.get_data(as_text=True))
-    with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
-        response = rpc.noteService.create_label_service(request_data)
-        response = json.dumps(response)
-    return Response(response=response, content_type='application/json', status=200)
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

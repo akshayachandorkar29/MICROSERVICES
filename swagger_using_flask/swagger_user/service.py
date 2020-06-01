@@ -1,0 +1,700 @@
+"""
+This is the service file which has all the business logic of user service
+Author: Akshaya Revaskar
+Date: 29-04-2020
+"""
+
+# importing necessary modules and packages
+from .common.note_db_operations import *
+from .note_models import Notes, Label
+from .common.utils import *
+from nameko.rpc import rpc
+from .common.db_operations import *
+from .models import Users, Short
+from .config.redis_connection import RedisConnection
+from .auth.short_url_generated import ShortUrlGenerator
+from .auth.validation import Validation
+from .vendor.send_mail import SendMail
+from .swagger_env import Configuration
+import jwt
+
+configuration = Configuration()
+short_object = ShortUrlGenerator()
+redis_obj = RedisConnection()
+mail_object = SendMail()
+valid = Validation()
+
+
+class UserService(object):
+    name = 'userService'
+
+    # service for registering users
+    @rpc
+    def registration_service(self, request_data):
+
+        response = {
+            "success": False,
+            "message": "something went wrong!",
+            "data": []
+        }
+
+        try:
+            # unpacking data from request object
+            username = request_data.get('username')
+            password = request_data.get('password')
+            email = request_data.get('email')
+
+            # validating username
+            if not valid.username_validate(username):
+                response["message"] = "Length of Username should be greater than 3 and less than 16 and it can not be a number"
+                raise ValueError
+
+            # validating email
+            if not valid.email_validate(email):
+                response["message"] = "Not a valid email id"
+                raise ValueError
+
+            # validating password
+            if not valid.password_validate(password):
+                response["message"] = "Length of password must be 8 or more!!!"
+                raise ValueError
+
+            record = filter_by_email(table=Users, email=email)
+            if not record:
+                user_data = Users(username=username,
+                                  password=password,
+                                  email=email)
+
+                # saving user object in the database
+                save(user_data)
+
+                # retrieving record of the current user to get id
+                db_record = filter_by_email(table=Users, email=email)
+                if db_record:
+                    user_id = db_record.id
+
+                    # generating jwt token with user id
+                    token = jwt.encode({'id': user_id}, configuration.JWT_SECRET_KEY, algorithm='HS256').decode(
+                        'utf-8')
+
+                    # generating short url
+                    short = short_object.short_url(10)
+
+                    short_data = Short(token=token,
+                                       short=short)
+                    # saving short object into database
+                    save(short_data)
+
+                    host = configuration.MICRO_HOST
+                    port = configuration.MICRO_PORT
+
+                    # message to send in the mail as a link
+                    message = f"Click here to activate : http://{host}:{port}/activate/token={short}"
+
+                    # sending mail using token, email id and link
+                    mail_object.send_mail(email, message)
+
+                    response["success"] = True
+                    response["message"] = "User Registered successfully!"
+
+            else:
+                response["message"] = "User Already Exist"
+
+        # catching exceptions
+        except ValueError:
+            response = response
+
+        except Exception:
+            response = response
+
+        return response
+
+    # service for activating registered user
+    @rpc
+    def activate_registration_service(self, request_data):
+
+        response = {
+            "success": False,
+            "message": "something went wrong!",
+            "data": []
+        }
+        try:
+
+            # getting data from the link
+            short_token = request_data.get('token')
+            short_token = short_token.split("=")
+            short_token = short_token[1]
+            if short_token is not None:  # if the short url is not empty,
+
+                # getting respective token from given short url
+                result = filter_by_short(Short, short_token)
+                if result:
+                    token = result.token
+
+                    # decoding token
+                    payload = jwt.decode(token, configuration.JWT_SECRET_KEY, algorithms=['HS256'])
+                    user_id = payload.get('id')
+
+                    # activating user
+                    result = update_active(table=Users, id=user_id)
+                    if result:
+                        response["success"] = True
+                        response["message"] = "Your account is activated Successfully!"
+                    else:
+                        response["message"] = "user does not exist"
+
+        except Exception:
+            response = response
+
+        return response
+
+    # user login service
+    @rpc
+    def login_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "Unable to login",
+            "data": []
+        }
+        try:
+            # getting data from request object
+            email = request_data.get('email')
+            password = request_data.get('password')
+
+            db_record = filter_by_email(table=Users, email=email)
+            if db_record:
+                user_id = db_record.id
+                if db_record.password == password and db_record.active == 1:
+
+                    # generating token using JWT module
+                    token = jwt.encode({'id': user_id}, configuration.JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
+
+                    # setting data into redis cache
+                    redis_obj.set(user_id, token)
+
+                    response["success"] = True
+                    response["message"] = "Successfully logged in!"
+                    response["data"] = [{"token": token}]
+
+        except Exception:
+            response = response
+
+        return response
+
+    # service for forget password
+    @rpc
+    def forgot_service(self, request):
+        response = {
+            "success": False,
+            "message": "Something went wrong",
+            "data": []
+        }
+        try:
+
+            email = request.get('email')
+
+            result = filter_by_email(table=Users, email=email)
+            if result:
+                user_id = result.id
+
+                # generating token with JWT module
+                token = jwt.encode({'id': user_id}, configuration.JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
+
+                # generating short url
+                short = short_object.short_url(10)
+
+                short_data = Short(token=token,
+                                   short=short)
+                # saving short object into database
+                save(short_data)
+
+                host = configuration.MICRO_HOST
+                port = configuration.MICRO_PORT
+
+                # message to send in the mail as a link
+                message = f"Click here to activate : http://{host}:{port}/reset/token={short}"
+
+                # sending mail using token, email id and link
+                mail_object.send_mail(email, message)
+
+                response["success"] = True
+                response["message"] = "Mail sent successfully!"
+
+            else:
+                response["message"] = "User Not found"
+
+        except Exception:
+            response = response
+
+        return response
+
+    # service for resetting password in case of forget
+    @rpc
+    def reset_password_service(self, request):
+        response = {
+            "success": False,
+            "message": "Something went wrong!",
+            "data": []
+        }
+        try:
+
+            # getting data from request object
+            email = request.get('email')
+            old_password = request.get('old_password')
+            new_password = request.get('new_password')
+
+            short_token = request.get('token')
+            short_token = short_token.split("=")
+            short_token = short_token[1]
+
+            if short_token is not None:
+                result = filter_by_short(Short, short_token)
+                if result:
+                    token = result.token
+
+                    # decoding token
+                    payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+                    user_id = payload.get('id')
+
+                    # updating new password in the database
+                    update_result = update_password(table=Users, id=user_id, new_password=new_password)
+
+                    if update_result:
+                        response["message"] = "Password reset Successfully!!!"
+                        response["success"] = True
+
+                else:
+                    response["message"] = "Token not found!!!"
+
+        except Exception:
+            response = response
+
+        return response
+
+
+class NoteService(object):
+    name = 'noteService'
+
+    # creating note service
+    @rpc
+    def create_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "Something went wrong!"
+        }
+
+        try:
+
+            # checking if coming data is not empty
+            if request_data is not None:
+                note = Notes(title=request_data.get('title'),
+                             description=request_data.get('description'),
+                             color=request_data.get('color'),
+                             is_trashed=request_data.get('is_trashed'),
+                             is_archived=request_data.get('is_archived'),
+                             is_pinned=request_data.get('is_pinned'),
+                             is_restored=request_data.get('is_restored'),
+                             label_name=request_data.get('label_name'),
+                             user_id=request_data.get('user_id')
+                             )
+
+                # saving the note object
+                save(note)
+
+                response["success"] = True
+                response["message"] = "NOTE CREATED SUCCESSFULLY!"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # reading note service
+    @rpc
+    def read_note_service(self, request):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            note_id = request.get('id')
+
+            # getting id from request
+            if note_id is not None:
+                # getting data from table
+                note = filter_by_id(table=Notes, id=note_id)
+
+                if note:
+                    # converting coming data into json format
+                    json_data = serialize_data(note)
+
+                    response["success"] = True
+                    response["message"] = "NOTE READ SUCCESSFULLY!"
+                    response["data"] = json_data
+
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            else:
+                response["message"] = "something went wrong!"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # updating the note service
+    @rpc
+    def update_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            note_id = request_data.get('id')
+
+            if request_data.get('color') and request_data.get('title') and request_data.get('description'):
+                color = request_data.get('color')
+                title = request_data.get('title')
+                description = request_data.get('description')
+
+                result = update_note(table=Notes, id=note_id, color=color, title=title, description=description)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('color') and request_data.get('title'):
+                color = request_data.get('color')
+                title = request_data.get('title')
+
+                result = update_note(table=Notes, id=note_id, color=color, title=title)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('color') and request_data.get('description'):
+                color = request_data.get('color')
+                description = request_data.get('description')
+
+                result = update_note(table=Notes, id=note_id, color=color, description=description)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('title') and request_data.get('description'):
+                title = request_data.get('title')
+                description = request_data.get('description')
+
+                result = update_note(table=Notes, id=note_id, title=title, description=description)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('title'):
+                title = request_data.get('title')
+
+                result = update_note(table=Notes, id=note_id, title=title)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('description'):
+                description = request_data.get('description')
+
+                result = update_note(table=Notes, id=note_id, description=description)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+            if request_data.get('color'):
+                color = request_data.get('color')
+
+                result = update_note(table=Notes, id=note_id, color=color)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE UPDATED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST!"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # delete note service
+    @rpc
+    def delete_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            # getting id from request_data
+            note_id = request_data.get('id')
+
+            if note_id is not None:
+                # getting data from table
+                note = filter_by_id(table=Notes, id=note_id)
+                if note.is_trashed == 1:
+                    result = delete_record(table=Notes, id=note_id)
+                    if result:
+                        response["success"] = True
+                        response["message"] = "NOTE DELETED SUCCESSFULLY"
+                    else:
+                        response["message"] = "NOTE DOES NOT EXIST"
+                else:
+                    result = update_trash(table=Notes, id=note_id)
+                    if result:
+                        response["success"] = True
+                        response["message"] = "NOTE TRASHED SUCCESSFULLY"
+                    else:
+                        response["message"] = "NOTE DOES NOT EXIST"
+            else:
+                response["message"] = "WRONG USER NOTE"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # pin note service
+    @rpc
+    def pin_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            # getting id from request_data
+            note_id = request_data.get('id')
+
+            if note_id is not None:
+                result = update_pin(table=Notes, id=note_id)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE PINNED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST"
+            else:
+                response["message"] = "WRONG USER NOTE"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # pin note service
+    @rpc
+    def archive_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            # getting id from request_data
+            note_id = request_data.get('id')
+
+            if note_id is not None:
+                result = update_archive(table=Notes, id=note_id)
+                if result:
+                    response["success"] = True
+                    response["message"] = "NOTE ARCHIVED SUCCESSFULLY"
+                else:
+                    response["message"] = "NOTE DOES NOT EXIST"
+            else:
+                response["message"] = "WRONG USER NOTE"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # pin note service
+    @rpc
+    def restore_note_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            # getting id from request_data
+            note_id = request_data.get('id')
+
+            if note_id is not None:
+                # getting data from table
+                note = filter_by_id(table=Notes, id=note_id)
+                if note.is_trashed == 1:
+                    result = update_restore(table=Notes, id=note_id)
+                    if result:
+                        response["success"] = True
+                        response["message"] = "NOTE RESTORED SUCCESSFULLY"
+                    else:
+                        response["message"] = "NOTE DOES NOT EXIST"
+                else:
+                    response["message"] = "NOTE SHOULD BE TRASHED TO BE RESTORE"
+            else:
+                response["message"] = "WRONG USER NOTE"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # service for listing all the notes
+    @rpc
+    def list_note_service(self):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            notes = fetch_all(table=Notes)
+            if notes:
+                # converting data into json format
+                json_data = serialize_data(notes)
+
+                response["success"] = True
+                response["message"] = "NOTES LISTED SUCCESSFULLY!"
+                response["data"] = json_data
+
+            else:
+                response["message"] = "SOMETHING WENT WRONG..."
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # service for creating label
+    @rpc
+    def create_label_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            label_name = request_data.get('label_name')
+
+            # checking request_data is there
+            if request_data is not None:
+                label = Label(label_name=label_name)
+
+                # saving the label object
+                save(label)
+                response["success"] = True
+                response["message"] = "Label Created Successfully!"
+
+            else:
+                response["message"] = "Some values are missing..."
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # service for reading label
+    @rpc
+    def read_label_service(self, request):
+
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            label_id = request.get('id')
+
+            # getting id from request
+            if label_id is not None:
+                # getting data from table
+                label = filter_by_id(table=Label, id=label_id)
+
+                if label:
+                    # converting coming data into json format
+                    json_data = serialize_data(label)
+
+                    response["success"] = True
+                    response["message"] = "LABEL READ SUCCESSFULLY!"
+                    response["data"] = json_data
+
+                else:
+                    response["message"] = "LABEL DOES NOT EXIST!"
+
+            else:
+                response["message"] = "something went wrong!"
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # services for updating label
+    @rpc
+    def update_label_service(self, request_data):
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+        }
+        try:
+            label_id = request_data.get('id')
+            label_name = request_data.get('label_name')
+            result = update_label(table=Label, id=label_id, label_name=label_name)
+
+            if result:
+                response["success"] = True
+                response["message"] = "LABEL UPDATED SUCCESSFULLY!"
+            else:
+                response["message"] = "LABEl DOES NOT EXIST..."
+
+        except Exception as e:
+            print(e)
+
+        return response
+
+    # service for deleting label
+    @rpc
+    def delete_label_service(self, request_data):
+
+        response = {
+            "success": False,
+            "message": "something went wrong",
+            "data": []
+            }
+        try:
+            # getting id from request_data
+            label_id = request_data.get('id')
+
+            if label_id is not None:
+                # getting data from table
+                result = delete_record(table=Label, id=label_id)
+                if result:
+                    response["success"] = True
+                    response["message"] = "LABEL DELETED SUCCESSFULLY"
+                else:
+                    response["message"] = "LABEL DOES NOT EXIST"
+
+        except Exception as e:
+            print(e)
+
+        return response

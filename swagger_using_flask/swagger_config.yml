@@ -1,0 +1,26 @@
+summary: create user
+tags:
+  - user
+description: create user flask_service
+title: swagger micro
+consumes:
+- "application/json"
+produces:
+- "application/json"
+parameters:
+- name: "body"
+  in: "body"
+  description: "accepts dictionary"
+  required: true
+  schema:
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+responses:
+  200:
+    description:
+      Response
