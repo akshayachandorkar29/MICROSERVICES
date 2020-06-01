@@ -14,11 +14,22 @@ configuration = Configuration()
 
 
 class SendMail:
-
+    """
+    this is the class for sending mail using smtp
+    """
     def __init__(self):
         pass
 
     def send_mail(self, to_mail, username, host, port, short, html_file_name):
+        """
+        this is the method for sending mail
+        :param to_mail: id to which mail has to be sent
+        :param username: username of user who will be receiving the mail
+        :param host: localhost from which mail is being sent
+        :param port: port from which mail is being sent
+        :param short: short url which will be attached to the message in mail
+        :param html_file_name: name of the html file to be attached to decorate mail
+        """
         try:
 
             report_file = open(html_file_name)
@@ -59,6 +70,3 @@ class SendMail:
 
         except Exception as e:
             print(e)
-
-
-

@@ -13,11 +13,19 @@ redis = RedisConnection()
 
 
 class NoteService(object):
+    """
+    This is the Note service class
+    """
     name = 'noteService'
 
     # creating note service
     @rpc
     def create_note_service(self, request_data):
+        """
+        This method is for creating note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "Something went wrong!"
@@ -52,6 +60,11 @@ class NoteService(object):
     # reading note service
     @rpc
     def read_note_service(self, request):
+        """
+        This method is for reading note
+        :param request: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -87,6 +100,11 @@ class NoteService(object):
     # updating the note service
     @rpc
     def update_note_service(self, request_data):
+        """
+        This method is for updating note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -178,6 +196,11 @@ class NoteService(object):
     # delete note service
     @rpc
     def delete_note_service(self, request_data):
+        """
+        This method is for deleting note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -215,6 +238,11 @@ class NoteService(object):
     # pin note service
     @rpc
     def pin_note_service(self, request_data):
+        """
+        This method is for pin note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -242,6 +270,11 @@ class NoteService(object):
     # pin note service
     @rpc
     def archive_note_service(self, request_data):
+        """
+        This method is for archiving note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -269,6 +302,11 @@ class NoteService(object):
     # pin note service
     @rpc
     def restore_note_service(self, request_data):
+        """
+        This method is for restoring note
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -301,6 +339,10 @@ class NoteService(object):
     # service for listing all the notes
     @rpc
     def list_note_service(self):
+        """
+        This method is for listing note
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -327,6 +369,11 @@ class NoteService(object):
     # service for creating label
     @rpc
     def create_label_service(self, request_data):
+        """
+        This method is for creating label
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -355,6 +402,11 @@ class NoteService(object):
     # service for reading label
     @rpc
     def read_label_service(self, request):
+        """
+        This method is for reading label
+        :param request: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
 
         response = {
             "success": False,
@@ -391,6 +443,11 @@ class NoteService(object):
     # services for updating label
     @rpc
     def update_label_service(self, request_data):
+        """
+        This method is for updating label
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "something went wrong",
@@ -415,6 +472,11 @@ class NoteService(object):
     # service for deleting label
     @rpc
     def delete_label_service(self, request_data):
+        """
+        This method is for deleting label
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
 
         response = {
             "success": False,

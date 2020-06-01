@@ -14,7 +14,14 @@ from ...settings import MYSQL_DB_CONFIG
 
 
 class DatabaseService:
+    """
+    class for creating database connection and sesions
+    """
     def db_connection(self):
+        """
+        this is the method for establishing database connection
+        :return: session
+        """
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore')

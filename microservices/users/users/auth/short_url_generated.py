@@ -8,8 +8,15 @@ import string
 
 
 class ShortUrlGenerator:
+    """
+    This is the class for generating random string which is combination of letters and digits
+    """
 
     def short_url(self, string_length):
-        """Generate a random string of letters and digits """
+        """
+        Generate a random string of letters and digits
+        :param string_length: length of the string required
+        :return: a string
+        """
         letters_and_digits = string.ascii_letters + string.digits
         return ''.join(random.choice(letters_and_digits) for i in range(string_length))

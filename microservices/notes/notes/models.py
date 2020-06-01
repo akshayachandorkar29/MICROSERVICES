@@ -14,6 +14,9 @@ DeclarativeBase = declarative_base()
 
 # defining Notes table with fields
 class Notes(DeclarativeBase):
+    """
+    This is the class for creating Notes Model
+    """
     __tablename__ = 'notes'
     id = Column(Integer, primary_key=True)
     title = Column(String(50), nullable=False)
@@ -44,6 +47,9 @@ class Notes(DeclarativeBase):
 
 # defining label table with fields
 class Label(DeclarativeBase):
+    """
+    This is the class for creating Label model
+    """
     __tablename__ = 'label'
     id = Column(Integer, primary_key=True)
     label_name = Column(String(250), nullable=False)

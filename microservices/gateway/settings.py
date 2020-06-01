@@ -1,3 +1,6 @@
+"""
+This file contains settings for user service
+"""
 from .gateway_env import Configuration
 configuration = Configuration()
 

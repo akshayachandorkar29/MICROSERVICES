@@ -1,5 +1,5 @@
 """
-This file has decorator
+This file has decorator method
 Author: Akshaya Revaskar
 Date: 29-04-2020
 """
@@ -12,6 +12,12 @@ redis_obj = RedisConnection()
 
 def is_authenticated(method):
     def authenticate_user(self, request, **kwargs):
+        """
+        This is the decorator method
+        :param request: request coming from client to server
+        :param kwargs: arguments with keys
+        :return: method authenticate_user
+        """
         try:
             print(request.path, type(request.path))
             if request.path not in ['/forgot', '/register', '/login']:

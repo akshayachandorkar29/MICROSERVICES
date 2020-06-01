@@ -11,6 +11,11 @@ configuration = Configuration()
 
 
 def create_jwt_token(id):
+    """
+    method to create jwt token
+    :param id: user id to create payload
+    :return: encoded token with user id
+    """
     try:
         payload = {'id': id}
         encoded_token = jwt.encode(payload, configuration.JWT_SECRET_KEY, algorithm='HS256').decode('utf-8')
@@ -20,6 +25,11 @@ def create_jwt_token(id):
 
 
 def decode_jwt_token(token):
+    """
+    method to decode token
+    :param token: token received from user to decode
+    :return: decoded token
+    """
     try:
         decoded_token = jwt.decode(token, configuration.JWT_SECRET_KEY, algorithms=['HS256'])
     except:
@@ -27,22 +37,12 @@ def decode_jwt_token(token):
     return decoded_token
 
 
-# class AlchemyEncoder(json.JSONEncoder):
-#     def default(self, obj):
-#         if isinstance(obj.__class__, DeclarativeMeta):
-#             fields = {}
-#             for field in [x for x in dir(obj) if not x.startswith('__') and x != 'metadata']:
-#                 data = obj.__getattribute__(field)
-#                 try:
-#                     json.dumps(data)
-#                     fields[field] = data
-#                 except TypeError:
-#                     fields[field] = None
-#             return fields
-#         return json.JSONEncoder.default(self, obj)
-
-
-def serialize_data(coming_object):
-    serializer_data = json.dumps(coming_object)
+def serialize_data(object):
+    """
+    method to convert dictionary to json and then json to dictionary
+    :param object: object to be converted
+    :return: python dictionary
+    """
+    serializer_data = json.dumps(object)
     data = json.loads(serializer_data)
     return data

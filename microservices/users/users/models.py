@@ -1,3 +1,8 @@
+"""
+This is the file for declaring all the tables and its fields
+Author: Akshaya Revaskar
+Date: 29-04-2020
+"""
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer
 
@@ -6,6 +11,9 @@ DeclarativeBase = declarative_base()
 
 
 class Users(DeclarativeBase):
+    """
+    this is the class for creating Users model
+    """
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     username = Column(String(50), nullable=False, unique=True)
@@ -20,6 +28,9 @@ class Users(DeclarativeBase):
 
 
 class Short(DeclarativeBase):
+    """
+    this is the class for creating Short model
+    """
     __tablename__ = 'short'
     id = Column(Integer, primary_key=True)
     short = Column(String(255), nullable=False)
@@ -28,4 +39,3 @@ class Short(DeclarativeBase):
     def __init__(self, short, token):
         self.short = short
         self.token = token
-

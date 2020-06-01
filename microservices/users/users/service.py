@@ -28,6 +28,11 @@ class UserService(object):
     # service for registering users
     @rpc
     def registration_service(self, request_data):
+        """
+        this is the method for registering user
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
 
         response = {
             "success": False,
@@ -43,7 +48,8 @@ class UserService(object):
 
             # validating username
             if not valid.username_validate(username):
-                response["message"] = "Length of Username should be greater than 3 and less than 16 and it can not be a number"
+                response["message"] = "Length of Username should be greater than 3 and less than 16 " \
+                                      "and it can not be a number"
                 raise ValueError
 
             # validating email
@@ -107,6 +113,11 @@ class UserService(object):
     # service for activating registered user
     @rpc
     def activate_registration_service(self, request_data):
+        """
+        this is the method for activating user by updating active flag
+        :param request_data: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
 
         response = {
             "success": False,
@@ -146,6 +157,11 @@ class UserService(object):
     # user login service
     @rpc
     def login_service(self, request_data):
+        """
+        this is the method for logging user in
+        :param request_data:
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "Unable to login",
@@ -179,6 +195,11 @@ class UserService(object):
     # service for forget password
     @rpc
     def forgot_service(self, request):
+        """
+        this is the method for allowing user to tell that they forgot the password
+        :param request: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "Something went wrong",
@@ -225,6 +246,11 @@ class UserService(object):
     # service for resetting password in case of forget
     @rpc
     def reset_password_service(self, request):
+        """
+        this is the method for resetting password
+        :param request: json data coming from user
+        :return: response dictionary with message, data and success flag
+        """
         response = {
             "success": False,
             "message": "Something went wrong!",

@@ -1,3 +1,6 @@
+"""
+This file contains settings for user service
+"""
 from .users_env import Configuration
 configuration = Configuration()
 
