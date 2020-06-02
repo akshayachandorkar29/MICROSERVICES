@@ -1,9 +1,16 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Microservices server.  You can find out more about Swagger at
+                [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/)."
+  version: "1.0.0"
+  title: "Swagger Microservices"
+tags:
+- name: "user"
+
 post:
-  /register:
-    summary: create user
-    tags:
-      - user
-    description: create user flask_service
+  /user_register:
+    summary: user registration
+    description: register user using flask_service
   parameters:
     - name: body
       in: body
@@ -14,18 +21,16 @@ post:
           email:
             type: string
           password:
-            type: string
+              type: string
 responses:
   200:
     description:
       Response
 
 get:
-  /activate/{token}:
-    summary: reset user password
-    tags:
-      - user
-    description: create reset password user flask_service
+  /activate_user/{token}:
+    summary: activate user
+    description: activate user using flask_service
   parameters:
     - name: token
       in: path
@@ -36,10 +41,8 @@ response:
       Response
 
 put:
-  /reset/{token}:
+  /reset_password/{token}:
     summary: reset user password
-    tags:
-      - user
     description: create reset password user flask_service
   parameters:
     - name: token

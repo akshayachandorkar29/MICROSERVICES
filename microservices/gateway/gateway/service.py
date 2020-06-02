@@ -104,7 +104,7 @@ class GatewayService:
 # ==================================================== Note Service ===================================================
 
     # service for creating new note
-    @http('POST', '/create_note/')
+    @http('POST', '/create_note')
     @is_authenticated
     def create_note(self, request):
         """
@@ -130,7 +130,7 @@ class GatewayService:
         This is the method to read note
         :param request: request coming from client to server
         :param kwargs: list of arguments with keys
-        :return:
+        :return: Response with response dictionary and status code
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))

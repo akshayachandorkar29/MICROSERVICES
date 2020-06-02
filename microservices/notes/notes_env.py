@@ -1,9 +1,3 @@
-"""
-This is the environment file
-Author: Akshaya Revaskar
-"""
-
-
 class Configuration:
     JWT_SECRET_KEY = 'secret'
     MICRO_REDIS_HOST = "localhost"

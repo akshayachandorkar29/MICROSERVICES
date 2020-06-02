@@ -1,0 +1,69 @@
+#swagger: "2.0"
+#info:
+#  description: "This is a sample server Microservices server.  You can find out more about Swagger at
+#                [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/)."
+#  version: "1.0.0"
+#  title: "Swagger Microservices"
+tags:
+- name: "label"
+
+post:
+  /create_label:
+    summary: create label
+    description: create label flask_service
+  parameters:
+    - name: body
+      in: body
+      schema:
+        properties:
+          label_name:
+            type: string
+responses:
+  200:
+    description:
+      Response
+
+get:
+  /read_label/{pk}:
+    summary: read label
+    description: reading label by id
+  parameters:
+    - name: pk
+      in: path
+      type: integer
+response:
+  200:
+    description:
+      Response
+
+put:
+  /update_label/{pk}:
+    summary: reset user password
+    description: create reset password user flask_service
+  parameters:
+    - name: pk
+      in: path
+      type: integer
+    - name: body
+      in: body
+      schema:
+        properties:
+          label_name:
+            type: string
+respons:
+  200:
+    description:
+      Response
+
+delete:
+  /delete_label/{pk}:
+    summary: delete label service
+    description: delete label service using note flask_service
+  parameters:
+    - name: pk
+      in: path
+      type: integer
+res:
+  200:
+    description:
+      Response

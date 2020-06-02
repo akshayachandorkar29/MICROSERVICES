@@ -1,6 +1,3 @@
-"""
-This file contains settings for user service
-"""
 from .notes_env import Configuration
 configuration = Configuration()
 
