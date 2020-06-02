@@ -65,6 +65,9 @@ def reset(**kwargs):
 @swag_from('note_swagger.yml')
 def create():
     request_data = json.loads(request.get_data(as_text=True))
+    token = request.headers['token']
+    payload = decode_jwt_token(token)
+    request_data['user_id'] = payload.get('id')
     with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
         response = rpc.noteService.create_note_service(request_data)
         response = json.dumps(response)
@@ -106,6 +109,9 @@ def delete(**kwargs):
 @swag_from('label_swagger.yml')
 def label_create():
     request_data = json.loads(request.get_data(as_text=True))
+    token = request.headers['token']
+    payload = decode_jwt_token(token)
+    request_data['user_id'] = payload.get('id')
     with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
         response = rpc.noteService.create_label_service(request_data)
         response = json.dumps(response)

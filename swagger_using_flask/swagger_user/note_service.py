@@ -381,8 +381,7 @@ class NoteService(object):
             "data": []
         }
         try:
-            import pdb
-            pdb.set_trace()
+
             label_name = request_data.get('label_name')
 
             # checking request_data is there

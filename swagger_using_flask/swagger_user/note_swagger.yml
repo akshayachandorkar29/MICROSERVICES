@@ -12,14 +12,14 @@ post:
     summary: create note
     description: create note flask_service
   parameters:
+    - name: token
+      in: header
     - name: body
       in: body
       schema:
         properties:
           title:
             type: string
-          user_id:
-            type: integer
 responses:
   200:
     description:

@@ -28,23 +28,23 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/sample" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="F:\BridgeLabz\Microservices" />
-      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_user\common" />
-      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_user" />
-      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_notes" />
-      <recent name="F:\BridgeLabz\Microservices\microservices" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="F:\BridgeLabz\Microservices\microservices\users\users\vendor" />
       <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_user" />
       <recent name="F:\BridgeLabz\Microservices\microservices" />
       <recent name="F:\BridgeLabz\Microservices\microservices\flask_api_swagger" />
       <recent name="F:\BridgeLabz\Microservices\microservices\flask_api_swagger\flask_api_swagger" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\BridgeLabz\Microservices\sample" />
+      <recent name="F:\BridgeLabz\Microservices" />
+      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_user\common" />
+      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_user" />
+      <recent name="F:\BridgeLabz\Microservices\flask_api_swagger\swagger_notes" />
     </key>
   </component>
   <component name="RunManager" selected="Python.server">
