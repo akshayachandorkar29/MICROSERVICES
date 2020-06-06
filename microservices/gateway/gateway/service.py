@@ -232,12 +232,14 @@ class GatewayService:
 
     # gateway service for listing note
     @http('GET', '/list_note')
-    def list_note(self):
+    @is_authenticated
+    def list_note(self, request):
         """
         method for listing all the notes
         :return: list of notes
         """
-        response = self.note_rpc.list_note_service()  # calling list note service
+        request_data = json.loads(request.get_data(as_text=True))
+        response = self.note_rpc.list_note_service(request_data)  # calling list note service
         # converting response from dictionary to json
         response = json.dumps(response)
         return Response(response=response, content_type='application/json', status=200)

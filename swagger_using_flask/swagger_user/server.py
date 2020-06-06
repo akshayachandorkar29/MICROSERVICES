@@ -105,6 +105,39 @@ def delete(**kwargs):
     return Response(response=response, content_type='application/json', status=200)
 
 
+@app.route('/pin_note/<string:pk>', methods=['PUT'])
+@swag_from('note_swagger.yml')
+def pin(**kwargs):
+    request_data = json.loads(request.get_data(as_text=True))
+    request_data['id'] = kwargs.get('pk')
+    with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
+        response = rpc.noteService.pin_note_service(request_data)  # call the reset service
+        response = json.dumps(response)
+    return Response(response=response, content_type='application/json', status=200)
+
+
+@app.route('/archive_note/<string:pk>', methods=['PUT'])
+@swag_from('note_swagger.yml')
+def archive(**kwargs):
+    request_data = json.loads(request.get_data(as_text=True))
+    request_data['id'] = kwargs.get('pk')
+    with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
+        response = rpc.noteService.archive_note_service(request_data)  # call the reset service
+        response = json.dumps(response)
+    return Response(response=response, content_type='application/json', status=200)
+
+
+@app.route('/restore_note/<string:pk>', methods=['PUT'])
+@swag_from('note_swagger.yml')
+def restore(**kwargs):
+    request_data = json.loads(request.get_data(as_text=True))
+    request_data['id'] = kwargs.get('pk')
+    with ClusterRpcProxy(CONFIG) as rpc:  # using cluster rpc
+        response = rpc.noteService.restore_note_service(request_data)  # call the reset service
+        response = json.dumps(response)
+    return Response(response=response, content_type='application/json', status=200)
+
+
 @app.route('/create_label', methods=['POST'])
 @swag_from('label_swagger.yml')
 def label_create():

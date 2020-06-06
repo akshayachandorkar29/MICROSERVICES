@@ -87,11 +87,11 @@ class NoteService(object):
                                        "label_name": note.label_name, "created_at": note.created_at,
                                        "updated_at": note.updated_at}
 
-                    note_dict = {"note_data": note_dictionary}
+                    note_list = [note_dictionary]
 
                     response["success"] = True
                     response["message"] = "NOTE READ SUCCESSFULLY!"
-                    response["data"] = note_dict
+                    response["data"] = note_list
 
                 else:
                     response["message"] = "NOTE DOES NOT EXIST!"
@@ -345,7 +345,7 @@ class NoteService(object):
 
     # service for listing all the notes
     @rpc
-    def list_note_service(self):
+    def list_note_service(self, request_data):
         """
         This method is for listing note
         :return: response dictionary with message, data and success flag
@@ -358,12 +358,21 @@ class NoteService(object):
         try:
             notes = fetch_all(table=Notes)
             if notes:
-                # converting data into json format
-                json_data = serialize_data(notes)
+                note_list = []
+                for note in notes:
+
+                    note_dictionary = {"id": note.id, "title": note.title, "user_id": note.user_id,
+                                       "description": note.description, "color": note.color,
+                                       "is_archived": note.is_archived, "is_trashed": note.is_trashed,
+                                       "is_restored": note.is_restored, "is_pinned": note.is_pinned,
+                                       "label_name": note.label_name, "created_at": note.created_at,
+                                       "updated_at": note.updated_at}
+
+                    note_list.append(note_dictionary)
 
                 response["success"] = True
                 response["message"] = "NOTES LISTED SUCCESSFULLY!"
-                response["data"] = json_data
+                response["data"] = note_list
 
             else:
                 response["message"] = "SOMETHING WENT WRONG..."
@@ -432,11 +441,11 @@ class NoteService(object):
 
                     label_dictionary = {"id": label.id, "label_name": label.label_name}
 
-                    label_dict = {"label_data": label_dictionary}
+                    label_list = [label_dictionary]
 
                     response["success"] = True
                     response["message"] = "LABEL READ SUCCESSFULLY!"
-                    response["data"] = label_dict
+                    response["data"] = label_list
 
                 else:
                     response["message"] = "LABEL DOES NOT EXIST!"
