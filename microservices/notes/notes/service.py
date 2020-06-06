@@ -79,12 +79,19 @@ class NoteService(object):
                 note = filter_by_id(table=Notes, id=note_id)
 
                 if note:
-                    # converting coming data into json format
-                    json_data = serialize_data(object=note)
+
+                    note_dictionary = {"id": note.id, "title": note.title, "user_id": note.user_id,
+                                       "description": note.description, "color": note.color,
+                                       "is_archived": note.is_archived, "is_trashed": note.is_trashed,
+                                       "is_restored": note.is_restored, "is_pinned": note.is_pinned,
+                                       "label_name": note.label_name, "created_at": note.created_at,
+                                       "updated_at": note.updated_at}
+
+                    note_dict = {"note_data": note_dictionary}
 
                     response["success"] = True
                     response["message"] = "NOTE READ SUCCESSFULLY!"
-                    response["data"] = json_data
+                    response["data"] = note_dict
 
                 else:
                     response["message"] = "NOTE DOES NOT EXIST!"
@@ -422,12 +429,14 @@ class NoteService(object):
                 label = filter_by_id(table=Label, id=label_id)
 
                 if label:
-                    # converting coming data into json format
-                    json_data = serialize_data(object=label)
+
+                    label_dictionary = {"id": label.id, "label_name": label.label_name}
+
+                    label_dict = {"label_data": label_dictionary}
 
                     response["success"] = True
                     response["message"] = "LABEL READ SUCCESSFULLY!"
-                    response["data"] = json_data
+                    response["data"] = label_dict
 
                 else:
                     response["message"] = "LABEL DOES NOT EXIST!"

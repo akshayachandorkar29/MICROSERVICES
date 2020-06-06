@@ -71,7 +71,8 @@ class NoteService(object):
             "data": []
         }
         try:
-
+            import pdb
+            pdb.set_trace()
             note_id = request.get('id')
 
             # getting id from request
