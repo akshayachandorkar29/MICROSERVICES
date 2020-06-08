@@ -1,4 +1,6 @@
-.idea
+.idea/workspace.xml
+microservices/notes/notes/__pycache__/service.cpython-36.pyc
+microservices/users/users/__pycache__/service.cpython-36.pyc
 env_microservices
 micro_env
 flask_api_swagger/swagger_user/swagger_env.py

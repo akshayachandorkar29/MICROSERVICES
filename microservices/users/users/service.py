@@ -194,10 +194,10 @@ class UserService(object):
 
     # service for forget password
     @rpc
-    def forgot_service(self, request):
+    def forgot_service(self, request_data):
         """
         this is the method for allowing user to tell that they forgot the password
-        :param request: json data coming from user
+        :param request_data: json data coming from user
         :return: response dictionary with message, data and success flag
         """
         response = {
@@ -207,8 +207,8 @@ class UserService(object):
         }
         try:
 
-            username = request.get('username')
-            email = request.get('email')
+            username = request_data.get('username')
+            email = request_data.get('email')
 
             result = filter_by_email(table=Users, email=email)
             if result:
@@ -245,10 +245,10 @@ class UserService(object):
 
     # service for resetting password in case of forget
     @rpc
-    def reset_password_service(self, request):
+    def reset_password_service(self, request_data):
         """
         this is the method for resetting password
-        :param request: json data coming from user
+        :param request_data: json data coming from user
         :return: response dictionary with message, data and success flag
         """
         response = {
@@ -259,11 +259,11 @@ class UserService(object):
         try:
 
             # getting data from request object
-            email = request.get('email')
-            old_password = request.get('old_password')
-            new_password = request.get('new_password')
+            email = request_data.get('email')
+            old_password = request_data.get('old_password')
+            new_password = request_data.get('new_password')
 
-            short_token = request.get('token')
+            short_token = request_data.get('token')
             short_token = short_token.split("=")
             short_token = short_token[1]
 

@@ -11,6 +11,7 @@ redis_obj = RedisConnection()
 
 
 def is_authenticated(method):
+
     def authenticate_user(self, request, **kwargs):
         """
         This is the decorator method

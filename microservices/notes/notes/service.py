@@ -52,17 +52,17 @@ class NoteService(object):
                 response["success"] = True
                 response["message"] = "NOTE CREATED SUCCESSFULLY!"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
     # reading note service
     @rpc
-    def read_note_service(self, request):
+    def read_note_service(self, request_data):
         """
         This method is for reading note
-        :param request: json data coming from user
+        :param request_data: json data coming from user
         :return: response dictionary with message, data and success flag
         """
         response = {
@@ -71,7 +71,7 @@ class NoteService(object):
             "data": []
         }
         try:
-            note_id = request.get('id')
+            note_id = request_data.get('id')
 
             # getting id from request
             if note_id is not None:
@@ -99,8 +99,8 @@ class NoteService(object):
             else:
                 response["message"] = "something went wrong!"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -195,8 +195,8 @@ class NoteService(object):
                 else:
                     response["message"] = "NOTE DOES NOT EXIST!"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -237,8 +237,8 @@ class NoteService(object):
             else:
                 response["message"] = "WRONG USER NOTE"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -269,8 +269,8 @@ class NoteService(object):
             else:
                 response["message"] = "WRONG USER NOTE"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -301,8 +301,8 @@ class NoteService(object):
             else:
                 response["message"] = "WRONG USER NOTE"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -338,8 +338,8 @@ class NoteService(object):
             else:
                 response["message"] = "WRONG USER NOTE"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -348,6 +348,7 @@ class NoteService(object):
     def list_note_service(self, request_data):
         """
         This method is for listing note
+        :param request_data: json data coming from user
         :return: response dictionary with message, data and success flag
         """
         response = {
@@ -377,8 +378,8 @@ class NoteService(object):
             else:
                 response["message"] = "SOMETHING WENT WRONG..."
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -410,17 +411,17 @@ class NoteService(object):
             else:
                 response["message"] = "Some values are missing..."
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
     # service for reading label
     @rpc
-    def read_label_service(self, request):
+    def read_label_service(self, request_data):
         """
         This method is for reading label
-        :param request: json data coming from user
+        :param request_data: json data coming from user
         :return: response dictionary with message, data and success flag
         """
 
@@ -430,7 +431,7 @@ class NoteService(object):
             "data": []
         }
         try:
-            label_id = request.get('id')
+            label_id = request_data.get('id')
 
             # getting id from request
             if label_id is not None:
@@ -453,8 +454,8 @@ class NoteService(object):
             else:
                 response["message"] = "something went wrong!"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -482,8 +483,8 @@ class NoteService(object):
             else:
                 response["message"] = "LABEl DOES NOT EXIST..."
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
 
@@ -514,7 +515,7 @@ class NoteService(object):
                 else:
                     response["message"] = "LABEL DOES NOT EXIST"
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            response = response
 
         return response
