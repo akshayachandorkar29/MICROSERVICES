@@ -99,7 +99,7 @@ class UserService(object):
                     response["message"] = "User Registered successfully!"
 
             else:
-                response["message"] = "User Already Exist"
+                response["message"] = "User Already Exist!"
 
         # catching exceptions
         except ValueError:

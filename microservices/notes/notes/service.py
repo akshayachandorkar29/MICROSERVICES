@@ -97,7 +97,7 @@ class NoteService(object):
                     response["message"] = "NOTE DOES NOT EXIST!"
 
             else:
-                response["message"] = "something went wrong!"
+                response["message"] = "SOMETHING WENT WRONG!"
 
         except Exception:
             response = response
