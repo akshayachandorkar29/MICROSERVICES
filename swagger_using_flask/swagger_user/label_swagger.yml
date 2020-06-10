@@ -8,7 +8,7 @@ tags:
 - name: "label"
 
 post:
-  /create_label:
+  /label/create:
     summary: create label
     description: create label flask_service
   parameters:
@@ -26,23 +26,24 @@ responses:
       Response
 
 get:
-  /read_label/{pk}:
+  /label/read:
     summary: read label
-    description: reading label by id
+    description: reading label
   parameters:
-    - name: pk
-      in: path
-      type: integer
+    - name: token
+      in: header
 response:
   200:
     description:
       Response
 
 put:
-  /update_label/{pk}:
+  /label/update/{pk}:
     summary: reset user password
     description: create reset password user flask_service
   parameters:
+    - name: token
+      in: header
     - name: pk
       in: path
       type: integer
@@ -58,10 +59,12 @@ respons:
       Response
 
 delete:
-  /delete_label/{pk}:
+  /label/delete/{pk}:
     summary: delete label service
     description: delete label service using note flask_service
   parameters:
+    - name: token
+      in: header
     - name: pk
       in: path
       type: integer

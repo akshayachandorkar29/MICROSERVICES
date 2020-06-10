@@ -52,7 +52,9 @@ class Label(DeclarativeBase):
     """
     __tablename__ = 'label'
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
     label_name = Column(String(250), nullable=False)
 
-    def __init__(self, label_name):
+    def __init__(self, user_id, label_name):
+        self.user_id = user_id
         self.label_name = label_name

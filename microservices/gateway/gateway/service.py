@@ -22,7 +22,7 @@ class GatewayService:
 # =============================================User Service ===========================================================
 
     # this is the service for registering user
-    @http('POST', '/register')
+    @http('POST', '/user/register')
     def registration(self, request):
         """
         This method is for user registration
@@ -37,24 +37,21 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # this is the service for activating user
-    @http('GET', '/activate/<string:token>')
+    @http('GET', '/user/activate/<string:token>')
     def activate_registration(self, request, **kwargs):
         """
         This method is for activating user
-        :param request: request coming from client to server
         :param kwargs: list of arguments with key
         :return: Response with response dictionary and status code
         """
-        # converting request data from json to dictionary
-        request_data = json.loads(request.get_data(as_text=True))
-        request_data['token'] = kwargs.get('token')
-        response = self.user_rpc.activate_registration_service(request_data)  # calling activation service
+        short_token = kwargs.get('token')
+        response = self.user_rpc.activate_registration_service(short_token)  # calling activation service
         # converting response from dictionary to json
         response = json.dumps(response)
         return Response(response=response, content_type='application/json', status=200)
 
     # this is the service for user login
-    @http('POST', '/login')
+    @http('POST', '/user/login')
     def login(self, request):
         """
         This method is user login method
@@ -69,7 +66,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # this is the service for allowing user to reset password in case of forgot
-    @http('POST', '/forgot')
+    @http('POST', '/user/forgot')
     def forgot(self, request):
         """
         This method gets called if user forgets the password
@@ -84,7 +81,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # this is the service to reset the password
-    @http('PUT', '/reset/<string:token>')
+    @http('PUT', '/user/reset/<string:token>')
     @is_authenticated
     def reset_password(self, request, **kwargs):
         """
@@ -104,7 +101,7 @@ class GatewayService:
 # ==================================================== Note Service ===================================================
 
     # service for creating new note
-    @http('POST', '/create_note')
+    @http('POST', '/note/create')
     @is_authenticated
     def create_note(self, request):
         """
@@ -123,25 +120,25 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for reading note
-    @http('GET', '/read_note/<string:pk>')
+    @http('GET', '/note/read')
     @is_authenticated
-    def read_note(self, request, **kwargs):
+    def read_note(self, request):
         """
         This is the method to read note
         :param request: request coming from client to server
         :param kwargs: list of arguments with keys
         :return: Response with response dictionary and status code
         """
-        # converting request data from json to dictionary
-        request_data = json.loads(request.get_data(as_text=True))
-        request_data['id'] = kwargs.get('pk')
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data = {'user_id': payload.get('id')}
         response = self.note_rpc.read_note_service(request_data)  # calling read note service
         # converting response from dictionary to json
         response = json.dumps(response)
         return Response(response=response, content_type='application/json', status=200)
 
     # service for updating note
-    @http('PUT', '/update_note/<string:pk>')
+    @http('PUT', '/note/update/<string:pk>')
     @is_authenticated
     def update_note(self, request, **kwargs):
         """
@@ -152,6 +149,9 @@ class GatewayService:
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.update_note_service(request_data)  # calling update note service
         # converting response from dictionary to json
@@ -159,7 +159,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for pinned note
-    @http('PUT', '/pin_note/<string:pk>')
+    @http('PUT', '/note/pin/<string:pk>')
     @is_authenticated
     def pin_note(self, request, **kwargs):
         """
@@ -170,6 +170,9 @@ class GatewayService:
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.pin_note_service(request_data)  # calling pin note service
         # converting response from dictionary to json
@@ -177,7 +180,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for archived note
-    @http('PUT', '/archive_note/<string:pk>')
+    @http('PUT', '/note/archive/<string:pk>')
     @is_authenticated
     def archive_note(self, request, **kwargs):
         """
@@ -188,6 +191,9 @@ class GatewayService:
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.archive_note_service(request_data)  # calling archive note service
         # converting response from dictionary to json
@@ -195,7 +201,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for restored note
-    @http('PUT', '/restore_note/<string:pk>')
+    @http('PUT', '/note/restore/<string:pk>')
     @is_authenticated
     def restore_note(self, request, **kwargs):
         """
@@ -206,6 +212,9 @@ class GatewayService:
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.restore_note_service(request_data)  # calling restore note service
         # converting response from dictionary to json
@@ -213,7 +222,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for deleting note
-    @http('DELETE', '/delete_note/<string:pk>')
+    @http('DELETE', '/note/delete/<string:pk>')
     @is_authenticated
     def delete_note(self, request, **kwargs):
         """
@@ -222,8 +231,10 @@ class GatewayService:
         :param kwargs: list of arguments with keys
         :return: Response with response dictionary and status code
         """
-        # converting request data from json to dictionary
-        request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data = dict()
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.delete_note_service(request_data)  # calling delete note service
         # converting response from dictionary to json
@@ -231,7 +242,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # gateway service for listing note
-    @http('GET', '/list_note')
+    @http('GET', '/note/list')
     @is_authenticated
     def list_note(self, request):
         """
@@ -245,7 +256,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for creating label
-    @http('POST', '/create_label')
+    @http('POST', '/label/create')
     @is_authenticated
     def create_label(self, request):
         """
@@ -264,25 +275,24 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for reading label
-    @http('GET', '/read_label/<string:pk>')
+    @http('GET', '/label/read')
     @is_authenticated
-    def read_label(self, request, **kwargs):
+    def read_label(self, request):
         """
-        this id the metho for reading label
+        this is the method for reading label
         :param request: request coming from client to server
-        :param kwargs: list of arguments with keys
         :return: Response with response dictionary and status code
         """
-        # converting request data from json to dictionary
-        request_data = json.loads(request.get_data(as_text=True))
-        request_data['id'] = kwargs.get('pk')
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data = {'user_id': payload.get('id')}
         response = self.note_rpc.read_label_service(request_data)  # calling read label service
         # converting response from dictionary to json
         response = json.dumps(response)
         return Response(response=response, content_type='application/json', status=200)
 
     # service for deleting label
-    @http('DELETE', '/delete_label/<string:pk>')
+    @http('DELETE', '/label/delete/<string:pk>')
     @is_authenticated
     def delete_label(self, request, **kwargs):
         """
@@ -291,8 +301,10 @@ class GatewayService:
         :param kwargs: list of arguments with keys
         :return: Response with response dictionary and status code
         """
-        # converting request data from json to dictionary
-        request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data = dict()
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.delete_label_service(request_data)  # calling delete label service
         # converting response from dictionary to json
@@ -300,7 +312,7 @@ class GatewayService:
         return Response(response=response, content_type='application/json', status=200)
 
     # service for updating label
-    @http('PUT', '/update_label/<string:pk>')
+    @http('PUT', '/label/update/<string:pk>')
     @is_authenticated
     def update_label(self, request, **kwargs):
         """
@@ -311,6 +323,9 @@ class GatewayService:
         """
         # converting request data from json to dictionary
         request_data = json.loads(request.get_data(as_text=True))
+        token = request.headers['token']
+        payload = decode_jwt_token(token)
+        request_data['user_id'] = payload.get('id')
         request_data['id'] = kwargs.get('pk')
         response = self.note_rpc.update_label_service(request_data)  # calling update label service
         # converting response from dictionary to json

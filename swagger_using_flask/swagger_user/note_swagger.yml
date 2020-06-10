@@ -8,7 +8,7 @@ tags:
 - name: "note"
 
 post:
-  /create_note:
+  /note/create:
     summary: create note
     description: create note flask_service
   parameters:
@@ -26,23 +26,24 @@ responses:
       Response
 
 get:
-  /read_note/{pk}:
+  /note/read:
     summary: read note
     description: reading note by id
   parameters:
-    - name: pk
-      in: path
-      type: integer
+    - name: token
+      in: header
 response:
   200:
     description:
       Response
 
 put:
-  /update_note/{pk}:
+  /note/update/{pk}:
     summary: update note
     description: create update note API
   parameters:
+    - name: token
+      in: header
     - name: pk
       in: path
       type: integer
@@ -62,10 +63,12 @@ respons:
       Response
 
 delete:
-  /delete_note/{pk}:
+  /note/delete/{pk}:
     summary: delete note service
     description: delete note service using note flask_service
   parameters:
+    - name: token
+      in: header
     - name: pk
       in: path
       type: integer

@@ -21,8 +21,35 @@ def save(result):
 
 
 # query for getting data by id
+def filter_by_user_id(table, user_id):
+    result = session.query(table).filter_by(user_id=user_id).all()
+    if result:
+        return result
+    else:
+        return False
+
+
+# query for getting data by id
 def filter_by_id(table, id):
     result = session.query(table).filter_by(id=id).first()
+    if result:
+        return result
+    else:
+        return False
+
+
+# query for getting data by label name
+def filter_by_name(table, name):
+    result = session.query(table).filter_by(label_name=name).first()
+    if result:
+        return result
+    else:
+        return False
+
+
+# query for getting data by id
+def filter_by_note_and_user_id(table, id, user_id):
+    result = session.query(table).filter_by(id=id, user_id=user_id).all()
     if result:
         return result
     else:
@@ -47,8 +74,8 @@ def filter_by_all(self, table, id):
 
 
 # query for updating password given email and password
-def update_label(table, id, label_name):
-    result = session.query(table).filter_by(id=id).first()
+def update_label(table, label_id, label_name):
+    result = session.query(table).filter_by(id=label_id).first()
     if result:
         result.label_name = label_name
         session.commit()
@@ -157,8 +184,8 @@ def update_trash(table, id):
 
 
 # method for updating pin note
-def update_pin(table, id):
-    result = session.query(table).filter_by(id=id).first()
+def update_pin(table, id, user_id):
+    result = session.query(table).filter_by(id=id, user_id=user_id).first()
     if result:
         result.is_pinned = 1
         session.commit()
@@ -169,8 +196,8 @@ def update_pin(table, id):
 
 
 # method for updating archive note
-def update_archive(table, id):
-    result = session.query(table).filter_by(id=id).first()
+def update_archive(table, id, user_id):
+    result = session.query(table).filter_by(id=id, user_id=user_id).first()
     if result:
         result.is_archived = 1
         session.commit()
@@ -181,8 +208,8 @@ def update_archive(table, id):
 
 
 # method for restoring note
-def update_restore(table, id):
-    result = session.query(table).filter_by(id=id).first()
+def update_restore(table, id, user_id):
+    result = session.query(table).filter_by(id=id, user_id=user_id).first()
     if result:
         result.is_restored = 1
         result.is_trashed = 0

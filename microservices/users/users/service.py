@@ -112,10 +112,10 @@ class UserService(object):
 
     # service for activating registered user
     @rpc
-    def activate_registration_service(self, request_data):
+    def activate_registration_service(self, short_token):
         """
         this is the method for activating user by updating active flag
-        :param request_data: json data coming from user
+        :param short_token: token
         :return: response dictionary with message, data and success flag
         """
 
@@ -126,10 +126,6 @@ class UserService(object):
         }
         try:
 
-            # getting data from the link
-            short_token = request_data.get('token')
-            short_token = short_token.split("=")
-            short_token = short_token[1]
             if short_token is not None:  # if the short url is not empty,
 
                 # getting respective token from given short url
@@ -182,6 +178,7 @@ class UserService(object):
 
                     # setting data into redis cache
                     redis_obj.set(user_id, token)
+                    # redis_obj.set('token', token)
 
                     response["success"] = True
                     response["message"] = "Successfully logged in!"
@@ -264,8 +261,6 @@ class UserService(object):
             new_password = request_data.get('new_password')
 
             short_token = request_data.get('token')
-            short_token = short_token.split("=")
-            short_token = short_token[1]
 
             if short_token is not None:
                 result = filter_by_short(Short, short_token)

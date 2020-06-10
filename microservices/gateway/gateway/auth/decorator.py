@@ -21,7 +21,7 @@ def is_authenticated(method):
         """
         try:
             print(request.path, type(request.path))
-            if request.path not in ['/forgot', '/register', '/login']:
+            if request.path not in ['/user/forgot', '/user/register', '/user/login']:
                 token = request.headers['token']
                 payload = decode_jwt_token(token)
                 id_key = payload['id']

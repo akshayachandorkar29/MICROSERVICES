@@ -8,7 +8,7 @@ tags:
 - name: "user"
 
 post:
-  /user_register:
+  /user/register:
     summary: user registration
     description: register user using flask_service
   parameters:
@@ -28,7 +28,7 @@ responses:
       Response
 
 get:
-  /activate_user/{token}:
+  /user/activate/{token}:
     summary: activate user
     description: activate user using flask_service
   parameters:
@@ -41,7 +41,7 @@ response:
       Response
 
 put:
-  /reset_password/{token}:
+  /user/reset/{token}:
     summary: reset user password
     description: create reset password user flask_service
   parameters:
