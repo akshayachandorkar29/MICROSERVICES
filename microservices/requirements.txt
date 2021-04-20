@@ -29,7 +29,7 @@ packaging==20.4
 path==13.1.0
 path.py==12.4.0
 pluggy==0.13.1
-py==1.8.1
+py==1.10.0
 pycparser==2.20
 PyJWT==1.7.1
 PyMySQL==0.9.3
